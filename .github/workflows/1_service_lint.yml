@@ -1,5 +1,7 @@
 name: Test 1 Service
 
+on: push
+
 jobs:
   linter:
     container: python:slim
