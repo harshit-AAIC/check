@@ -3,11 +3,15 @@ name: Test 1 Service
 on: push
 
 jobs:
-  Linting:
-    name: Linting
+  linter:
+    container: python:slim
+    name: linting
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-python@v1
-      - run: pip install pylint  # -r requirements.txt
-      - run: pylint src/adapter/*.py --rcfile pylintrc --output-format=colorized 
+      - run: apk add --no-cache zsh ca-certificates python3 gcc python3-dev musl-dev libxml2-dev libxslt-dev openssl-dev libffi-dev python3-dev py3-pip && pip3 install --upgrade pip setuptools wheel
+      - run: python3 -m ensurepip
+      - run: pip3 install pylint
+      - run: pip3 install -r requirements.txt
+      - run: export EXITVALUE=0
+      - run: zsh -c "pylint --output-format=colorized **/*.py" || export EXITVALUE=1
+      # - exit $EXITVALUE
