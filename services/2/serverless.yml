@@ -1,4 +1,4 @@
-service: 1
+service: 2
 
 provider:
   name: aws
@@ -21,55 +21,55 @@ provider:
       Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
 
 functions:
-  1-create:
+  2-create:
     handler: create.create
     events:
       - http:
-          path: 1
+          path: 2
           method: post
           cors: true
           authorizer:
                 name: authorizer
                   arn: 1
           
-  1-list:
+  2-list:
     handler: list.list
     events:
       - http:
-          path: 1
+          path: 2
           method: get
           cors: true
           authorizer:
                 name: authorizer
                   arn: 1
 
-  1-get:
+  2-get:
     handler: get.get
     events:
       - http:
-          path: 1/{id}
+          path: 2/{id}
           method: get
           cors: true
           authorizer:
                 name: authorizer
                   arn: 1
 
-  1-update:
+  2-update:
     handler: update.update
     events:
       - http:
-          path: 1/{id}
+          path: 2/{id}
           method: put
           cors: true
           authorizer:
                 name: authorizer
                   arn: 1
 
-  1-delete:
+  2-delete:
     handler: delete.delete
     events:
       - http:
-          path: 1/{id}
+          path: 2/{id}
           method: delete
           cors: true
           authorizer:
@@ -78,14 +78,14 @@ functions:
 
 resources:
   Resources:
-    1DynamoDbTable:
+    2DynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
       Properties:
         AttributeDefinitions:
           -
             AttributeName: s
-            AttributeType: 
+            AttributeType: S
         KeySchema:
           -
             AttributeName: s
@@ -124,4 +124,4 @@ custom:
   packageExternal:
     external:
       - 'all_services/src/common'
-      - 'all_services/src/1'
+      - 'all_services/src/2'

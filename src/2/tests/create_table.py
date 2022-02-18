@@ -15,7 +15,7 @@ def create_table():
         AttributeDefinitions=[
             {
                 'AttributeName': 's',
-                'AttributeType': ''
+                'AttributeType': 'S'
             }
         ],
         ProvisionedThroughput={
