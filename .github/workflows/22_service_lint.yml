@@ -2,8 +2,6 @@ name: Test 22 Service
 
 on: push
 
-on: push
-
 jobs:
   Linting:
     name: Linting
