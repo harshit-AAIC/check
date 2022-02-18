@@ -1,0 +1,117 @@
+service: 1
+
+provider:
+  name: aws
+  runtime: python3.8
+  stage: ${file(config/${opt:configFile}):STAGE}
+  region: ${file(config/${opt:configFile}):REGION}
+  profile: ${self:provider.stage}
+  environment: 
+    DYNAMODB_TABLE: ${self:service}-${self:provider.stage}
+    SUPPORT_ENGG_EMAIL: ${file(config/${opt:configFile}):SUPPORT_ENGG_EMAIL}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+
+functions:
+  1-create:
+    handler: create.create
+    events:
+      - http:
+          path: 1
+          method: post
+          cors: true
+          
+          
+  1-list:
+    handler: list.list
+    events:
+      - http:
+          path: 1
+          method: get
+          cors: true
+          
+
+  1-get:
+    handler: get.get
+    events:
+      - http:
+          path: 1/{id}
+          method: get
+          cors: true
+          
+
+  1-update:
+    handler: update.update
+    events:
+      - http:
+          path: 1/{id}
+          method: put
+          cors: true
+          
+
+  1-delete:
+    handler: delete.delete
+    events:
+      - http:
+          path: 1/{id}
+          method: delete
+          cors: true
+          
+
+resources:
+  Resources:
+    1DynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: s
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: s
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
+
+plugins:
+  - serverless-python-requirements
+  - serverless-plugin-aws-alerts
+  - serverless-package-external
+
+custom:
+  logRetentionInDays:
+    prod: 30
+    dev: 7
+    qa: 7
+  pythonRequirements:
+    noDeploy: []
+    pythonBin: python3
+  alerts:
+    stages:
+      - prod
+    dashboards: false
+    nameTemplate: ${self:service}-$[functionName]-$[metricName]-Alarm
+    topics:
+      alarm: 
+        topic: ${self:service}-${self:provider.stage}-alerts-alarm
+        notifications:
+          - protocol: email
+            endpoint: ${self:provider.environment.SUPPORT_ENGG_EMAIL}
+    alarms:
+      - functionErrors
+  packageExternal:
+    external:
+      - 'all_services/src/common'
+      - 'all_services/src/1'

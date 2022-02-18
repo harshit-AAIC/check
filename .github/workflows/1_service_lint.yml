@@ -1,0 +1,15 @@
+name: Test 1 Service
+
+on: push
+
+on: push
+
+jobs:
+  Linting:
+    name: Linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-python@v1
+      - run: pip install pylint  # -r requirements.txt
+      - run: pylint src/1/*.py --rcfile pylintrc --output-format=colorized 

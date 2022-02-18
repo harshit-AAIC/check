@@ -1,0 +1,4 @@
+oauth2
+datetime==4.3
+aws-lambda-powertools[pydantic]
+aws_lambda_powertools
